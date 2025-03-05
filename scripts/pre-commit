@@ -9,25 +9,20 @@ NC='\033[0m' # No Color
 # Get git root directory
 GIT_ROOT=$(git rev-parse --show-toplevel)
 
-# Make scripts executable
-chmod +x $GIT_ROOT/script/format-staged.sh
-chmod +x $GIT_ROOT/script/analyze-staged.sh
+# Ensure the format-staged script is executable
+chmod +x "$GIT_ROOT/scripts/format-staged"
 
-echo -e "${YELLOW}Running format check...${NC}"
-$GIT_ROOT/script/format-staged.sh
-echo
+echo -e "${YELLOW}Running ktlint format check...${NC}"
+"$GIT_ROOT/scripts/format-staged"
+FORMAT_STATUS=$?
 
-echo -e "${YELLOW}Running code analysis...${NC}"
-$GIT_ROOT/script/analyze-staged.sh
-ANALYZE_STATUS=$?
-
-if [ $ANALYZE_STATUS -ne 0 ]; then
-    echo -e "${RED}Analysis failed!${NC}"
+if [ $FORMAT_STATUS -ne 0 ]; then
+    echo -e "${RED}Ktlint check failed!${NC}"
     echo -e "${YELLOW}Do you want to commit anyway? [y/N]${NC}"
     read -r response
 
     if [[ "$response" =~ ^[Yy]$ ]]; then
-        echo -e "${YELLOW}Proceeding with commit despite analysis failure...${NC}"
+        echo -e "${YELLOW}Proceeding with commit despite ktlint issues...${NC}"
         exit 0
     else
         echo -e "${RED}Commit aborted.${NC}"
@@ -35,5 +30,5 @@ if [ $ANALYZE_STATUS -ne 0 ]; then
     fi
 fi
 
-echo -e "${GREEN}All checks passed!${NC}"
+echo -e "${GREEN}Ktlint check passed!${NC}"
 exit 0

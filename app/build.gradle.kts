@@ -23,7 +23,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
+                "proguard-rules.pro"
             )
         }
     }
@@ -35,9 +35,16 @@ android {
         jvmTarget = "11"
     }
 
-    buildFeatures {
+    buildFeatures{
         viewBinding = true
     }
+}
+
+kotlinter {
+    ktlintVersion = "1.5.0"
+    ignoreFormatFailures = true
+    ignoreLintFailures = false
+    reporters = arrayOf("html")
 }
 
 dependencies {
@@ -51,15 +58,9 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation(libs.glide)
+    implementation (libs.glide)
 }
 
-kotlinter {
-    ktlintVersion = "1.5.0"
-    ignoreFormatFailures = true
-    ignoreLintFailures = false
-    reporters = arrayOf("html")
-}
 
 tasks.register("enablePreCommitCheck") { // custom task named enablePreCommitCheck
     group = "git hooks" // this task belongs to git hook
@@ -88,4 +89,3 @@ tasks.register("enablePreCommitCheck") { // custom task named enablePreCommitChe
         }
     }
 }
-
