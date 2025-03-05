@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlinter)
 }
 
 android {
@@ -22,7 +23,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -34,7 +35,7 @@ android {
         jvmTarget = "11"
     }
 
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
     }
 }
@@ -50,5 +51,41 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation (libs.glide)
+    implementation(libs.glide)
 }
+
+kotlinter {
+    ktlintVersion = "1.5.0"
+    ignoreFormatFailures = true
+    ignoreLintFailures = false
+    reporters = arrayOf("html")
+}
+
+tasks.register("enablePreCommitCheck") { // custom task named enablePreCommitCheck
+    group = "git hooks" // this task belongs to git hook
+    description = "Installs the pre-commit hook for ktlint and detekt checks" // adding description
+
+    doLast {
+        // Get the source and destination files
+        val sourceFile = project.rootProject.file("script/pre-commit.sh")
+        val hooksDir = project.rootProject.file(".git/hooks")
+        val targetFile = hooksDir.resolve("pre-commit")
+
+        // Create hooks directory if it doesn't exist
+        hooksDir.mkdirs()
+
+        // Copy the file
+        if (sourceFile.exists()) {
+            sourceFile.copyTo(targetFile, overwrite = true)
+
+            // Make it executable
+            targetFile.setExecutable(true)
+
+            println("Pre-commit hook installed successfully!")
+            println("Location: ${targetFile.absolutePath}")
+        } else {
+            throw GradleException("Source file not found: ${sourceFile.absolutePath}")
+        }
+    }
+}
+
